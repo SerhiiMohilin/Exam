@@ -45,7 +45,7 @@
 
 .form-container .toggle-password-btn {
     position: absolute;
-    top: 50%;
+    top: 40%;
     right: 10px;
     transform: translateY(-50%);
     background: none;
@@ -64,17 +64,6 @@
     height: 20px;
 }
 
-.theme-toggle-btn {
-    margin-bottom: 20px;
-    padding: 8px 16px;
-    background-color: transparent;
-    border: 1px solid var(--text-color);
-    color: var(--text-color);
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.theme-toggle-btn:hover {
-    background-color: rgba(0, 0, 0, 0.1);
+.link-wraper {
+    text-align: center;
 }

@@ -1,39 +1,12 @@
 import {
-    createContext,
     useReducer,
+    useEffect,
     type FC,
     type PropsWithChildren,
-    useEffect,
 } from "react";
-import type { UserType } from "../types/AppContext.type";
+import { AppContext, ActionTypes } from "./AppContext";
+import type { UserType, DataType, ActionType, ThemeType } from "./AppContext";
 import { useLocalStorage } from "../hooks/useLocalStorage";
-
-type Theme = "light" | "dark";
-
-type DataType = {
-    user: UserType | null;
-    theme: Theme;
-};
-
-type ActionType<T = unknown> = {
-    type: string;
-    payload: T;
-};
-
-type AppContextType = {
-    data: DataType;
-    dispatch?: React.Dispatch<ActionType>;
-};
-
-export const enum ActionTypes {
-    userLogin = "USER_LOGIN",
-    userLogout = "USER_LOGOUT",
-    toggleTheme = "TOGGLE_THEME",
-}
-
-export const AppContext = createContext<AppContextType>({
-    data: { user: null, theme: "light" },
-});
 
 const reducer = (data: DataType, action: ActionType): DataType => {
     switch (action.type) {
@@ -55,8 +28,9 @@ const reducer = (data: DataType, action: ActionType): DataType => {
 };
 
 export const AppContextProvider: FC<PropsWithChildren> = ({ children }) => {
-    const [storedTheme, setStoredTheme] = useLocalStorage<Theme>("theme");
-    const initialTheme = (storedTheme === "dark" || storedTheme === "light") ? storedTheme : "light";
+    const [storedTheme, setStoredTheme] = useLocalStorage<ThemeType>("theme");
+
+    const initialTheme = storedTheme ?? "dark";
 
     const [data, dispatch] = useReducer(reducer, {
         user: null,
@@ -64,7 +38,19 @@ export const AppContextProvider: FC<PropsWithChildren> = ({ children }) => {
     });
 
     useEffect(() => {
-        setStoredTheme(data.theme);
+        if (data.theme) {
+            setStoredTheme(data.theme);
+        }
+    }, [data.theme, setStoredTheme]);
+
+    useEffect(() => {
+        const body = document.body;
+
+        body.classList.remove("light", "dark");
+
+        if (data.theme) {
+            body.classList.add(data.theme);
+        }
     }, [data.theme]);
 
     return (

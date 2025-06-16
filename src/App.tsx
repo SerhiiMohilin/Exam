@@ -3,8 +3,8 @@ import { Link } from "react-router";
 
 function App() {
   return (
-    <div>
-      <h1>WELCOME IN GEMENI</h1>
+    <div className="app-wraper">
+      <h1>Welcome to Gemini</h1>
       <Link to="/login">go to Login</Link>
     </div>
   )

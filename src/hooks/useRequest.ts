@@ -1,36 +1,44 @@
 import axios, { type Method, AxiosError } from "axios";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
-type OptionsType<T = unknown> = {
-    method: Method;
-    headers?: Record<string, string>;
-    body?: T;
+// Типы для возвращаемого значения
+type State<T> = {
+    data: T | null;
+    loading: boolean;
+    error: AxiosError | null;
 };
 
-type ReturnType<T = unknown> = [T | null, boolean, AxiosError | null];
+// Тип для возвращаемого кортежа: [функция для вызова, состояние]
+type ReturnType<RequestBody, ResponseBody> = [
+    (body: RequestBody) => Promise<void>,
+    State<ResponseBody>
+];
 
-export const useRequest = <RequestBody, ResponseBody>(
+export const useApiMutation = <RequestBody, ResponseBody>(
     url: string,
-    options: OptionsType<RequestBody>
-): ReturnType<ResponseBody> => {
-    const [data, setData] = useState<ResponseBody | null>(null);
-    const [loading, setLoading] = useState<boolean>(true);
+    method: Method
+): ReturnType<RequestBody, ResponseBody> => {
+    const [state, setState] = useState<State<ResponseBody>>({
+        data: null,
+        loading: false,
+        error: null,
+    });
 
-    const [error, setError] = useState<AxiosError | null>(null);
-
-    useEffect(() => {
-        if (!data && !error) {
-            const { method, body, headers } = options;
-
-            setLoading(true);
-
-            axios
-                .request({ url, method, data: body, headers })
-                .then(({ data }) => setData(data))
-                .catch((err) => setError(err))
-                .finally(() => setLoading(false));
+    const makeRequest = async (body: RequestBody) => {
+        setState({ data: null, loading: true, error: null });
+        try {
+            const response = await axios.request<ResponseBody>({
+                url,
+                method,
+                data: body,
+            });
+            setState({ data: response.data, loading: false, error: null });
+        } catch (err) {
+            if (err instanceof AxiosError) {
+                setState({ data: null, loading: false, error: err });
+            }
         }
-    }, [options, error, options, url]);
+    };
 
-    return [data, loading, error];
+    return [makeRequest, state];
 };

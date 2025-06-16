@@ -1,29 +1,24 @@
 import { useContext, useEffect } from "react";
+import { AppContext, ActionTypes } from "../../contexts/AppContext";
 import "./ThemeToggle.css";
-import { AppContext } from "../../contexts/AppContext";
 
 export const ThemeToggle = () => {
-
-    const { data } = useContext(AppContext);
-
-    useEffect(() => {
-        document.body.className = ""; // сброс классов
-        document.body.classList.add(data.theme); // добавляет "light" или "dark"
-    }, [data.theme]);
-
-    const [data, dispatch] = useReducer(reducer, {
-        user: null,
-        theme: initialTheme,
-    });
+    const { data, dispatch } = useContext(AppContext);
 
     useEffect(() => {
-        setStoredTheme(data.theme);
+        document.body.className = "";
+        document.body.classList.add(data.theme);
     }, [data.theme]);
+
+    const toggleTheme = () => {
+        dispatch?.({ type: ActionTypes.toggleTheme, payload: null });
+    };
+
     return (
         <label className="theme-switch">
             <input
                 type="checkbox"
-                checked={currentTheme === "dark"}
+                checked={data.theme === "dark"}
                 onChange={toggleTheme}
             />
             <span className="slider"></span>
