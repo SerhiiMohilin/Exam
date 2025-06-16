@@ -1,4 +1,4 @@
-import ReactMarkdown from "react-markdown"; // 1. Импортируем компонент
+import ReactMarkdown from "react-markdown";
 import type { ConversationPart } from "../../../types/types";
 
 type MessageListProps = {
@@ -19,7 +19,6 @@ export const MessageList = ({ conversation, isLoading }: MessageListProps) => {
                 >
                     <span>{part.role === "user" ? "You" : "Gemini"}</span>
 
-                    {/* 2. Заменяем h5 на компонент ReactMarkdown */}
                     <div className="message-content-wrapper">
                         <ReactMarkdown>{part.parts[0].text}</ReactMarkdown>
                     </div>
@@ -27,7 +26,6 @@ export const MessageList = ({ conversation, isLoading }: MessageListProps) => {
                 </div>
             ))}
             {isLoading && (
-                // 3. Оборачиваем Loader в структуру сообщения для корректных отступов
                 <div className="chat-message ai-message">
                     <span>Gemini</span>
                     <Loader />
